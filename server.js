@@ -6,7 +6,7 @@ const fetch = require('node-fetch');
 const bodyParser = require('body-parser');
 var cors = require('cors')
 const PORT = process.env.PORT || 8000;
-const URL = process.env.URL || "https://countries-game-api.herokuapp.com/";
+const URL = process.env.URL || `https://localhost:8000/`;
 
 const app = require('express')()
 app.use(bodyParser.urlencoded({ extended: true }));
