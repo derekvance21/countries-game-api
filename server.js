@@ -6,6 +6,7 @@ const fetch = require('node-fetch');
 const bodyParser = require('body-parser');
 var cors = require('cors')
 const PORT = process.env.PORT || 8000;
+const URL = process.env.URL || "https://countries-game-api.herokuapp.com/";
 
 const app = require('express')()
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -42,7 +43,7 @@ app.get('/country-stats', function (req, res) {
 })
 
 app.post('/', function (req, res) {
-    fetch('http://localhost:8000/')
+    fetch(URL)
     .then((response) => {
         return response.json()
     })
@@ -67,7 +68,7 @@ app.post('/', function (req, res) {
         }
     }).then((results) => {
         const {topTen, submittedGame} = results;
-        fetch('http://localhost:8000/country-stats')
+        fetch(URL + 'country-stats')
         .then(response => {
             return response.json()
         })
