@@ -51,10 +51,10 @@ app.post('/', function (req, res) {
     })
     .then(topTen => {
         const submittedGame = req.body
-        var topTenResponseArray = topTen;
         const numGames = topTen.push(submittedGame)
         topTen.sort(topTenSort)
         if (!_.isEqual(topTen.pop(), submittedGame) || numGames <= 10 ) { // if the submittedGame becomes part of the new topTen, or there weren't ten games in there
+            console.log("Updating Top Ten leaderboard for player: ", submittedGame.name)
             client.query(
                 q.Update(
                     q.Ref(q.Collection('leaderboard'), '283939936047989260'),
@@ -76,6 +76,7 @@ app.post('/', function (req, res) {
         })
         .then(countryStats => {
             if (submittedGame.score > 10) {
+                console.log("Updating Country Table for player: ", submittedGame.name)
                 _.forEach(submittedGame.namedCountryCodes, code => {
                     countryStats.countryCounts[code] += 1
                 })
