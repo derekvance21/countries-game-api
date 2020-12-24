@@ -8,6 +8,8 @@ var cors = require('cors')
 const PORT = process.env.PORT || 8000;
 const URL = process.env.URL || `https://localhost:8000/`;
 
+console.log(URL)
+
 const app = require('express')()
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
