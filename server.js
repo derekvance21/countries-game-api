@@ -60,7 +60,9 @@ app.post('/', function (req, res) {
                     q.Ref(q.Collection('leaderboard'), '283939936047989260'),
                     { data: { topTen: topTen } },
                 )
-            ).catch((error) => {
+            ).then(res => {
+                console.log("Successfully updated top ten leaderboard for player: ", submittedGame.name)
+            }).catch((error) => {
                 console.log(error)
             })
         }
