@@ -53,7 +53,7 @@ app.post('/', function (req, res) {
         const submittedGame = req.body
         const numGames = topTen.push(submittedGame)
         topTen.sort(topTenSort)
-        if (!_.isEqual(topTen.pop(), submittedGame) || numGames <= 10 ) { // if the submittedGame becomes part of the new topTen, or there weren't ten games in there
+        if ((numGames <= 10 && topTen.pop()) || !_.isEqual(topTen.pop(), submittedGame)) { // if the submittedGame becomes part of the new topTen, or there weren't ten games in there
             console.log("Updating Top Ten leaderboard for player: ", submittedGame.name)
             client.query(
                 q.Update(
