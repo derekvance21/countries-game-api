@@ -19,5 +19,8 @@
     "faunadb": "^4.0.0",
     "lodash": "^4.17.20",
     "node-fetch": "^2.6.1"
+  },
+  "engines": {
+    "node": "12.x"
   }
 }
