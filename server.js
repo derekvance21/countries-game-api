@@ -34,11 +34,6 @@ app.get('/country-stats', function (req, res) {
         q.Get(q.Ref(q.Collection('country-stats'), '285397108568097293'))
     )
     countryStatsQuery.then(response => {
-        // const countryCounts = response.data.countryCounts
-        // const totalGames = response.data.totalGames
-        // Object.keys(countryCounts).map(countryCode => {
-        //     return (countryCounts[countryCode] / totalGames * 100).toFixed(3)
-        // })
         res.json(response.data)
     }).catch(error => {
         console.log(error)
@@ -52,40 +47,51 @@ app.post('/', function (req, res) {
     })
     .then(topTen => {
         const submittedGame = req.body
+        var topTenResponseArray = topTen;
         const numGames = topTen.push(submittedGame)
         topTen.sort(topTenSort)
-        if (numGames <= 10 || !_.isEqual(topTen.pop(), submittedGame)) { // if the submittedGame becomes part of the new topTen, or there weren't ten games in there
-            // update the database
+        if (!_.isEqual(topTen.pop(), submittedGame) || numGames <= 10 ) { // if the submittedGame becomes part of the new topTen, or there weren't ten games in there
             client.query(
                 q.Update(
                     q.Ref(q.Collection('leaderboard'), '283939936047989260'),
                     { data: { topTen: topTen } },
                 )
-            ).then((response) => {
-                console.log(response.data.topTen)
-                res.json(topTen.map(game => ({...game, activeGame: _.isEqual(submittedGame, game)})))
-            }).catch((error) => {
+            ).catch((error) => {
                 console.log(error)
             })
-        } else {
-            console.log('Doesnt make leaderboard', submittedGame)
-            res.json(topTen)
         }
+        return {
+            topTen: topTen.map(game => ({...game, activeGame: _.isEqual(submittedGame, game)})), 
+            submittedGame: submittedGame
+        }
+    }).then((results) => {
+        const {topTen, submittedGame} = results;
         fetch('http://localhost:8000/country-stats')
         .then(response => {
             return response.json()
         })
         .then(countryStats => {
-            console.log(countryStats)
-            // above is a placeholder
-            // I need to change the way client-side sends game submissions to here
-            // Rn, it's {name: xxx, score: xxx, secondsLeft: xxx, (activeGame: x)}
-            // Should be {name: xxx, score: xxx, secondsLeft: xxx, countriesNamed (codes): [xxx, xxx, xxx, xxx, ...]}
-            // Then, I can loop through countriesNamed and increment their parallels in countryStats
-            // Update the document, get the new result back, and send it to the client-side
-            // The client-side then takes that object and calculates the percentages, populates a SortableTable, and renders
+            if (submittedGame.score > 10) {
+                _.forEach(submittedGame.namedCountryCodes, code => {
+                    countryStats.countryCounts[code] += 1
+                })
+                countryStats.totalGames += 1
+                client.query(
+                    q.Update(
+                        q.Ref(q.Collection('country-stats'), '285397108568097293'),
+                        { data: countryStats },
+                    )
+                ).then((response) => {
+                    res.json({topTen: topTen, ...response.data})
+                }).catch((error) => {
+                    console.log(error)
+                })
+            } else {
+                res.json({topTen: topTen, ...countryStats})
+            }
         })
     })
+    
     .catch((error) => {
         console.log(error)
     })
