@@ -5,6 +5,7 @@ q = faunadb.query
 const fetch = require('node-fetch');
 const bodyParser = require('body-parser');
 var cors = require('cors')
+const PORT = process.env.PORT || 8000;
 
 const app = require('express')()
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -97,7 +98,7 @@ app.post('/', function (req, res) {
     })
 })
 
-app.listen(8000, ()=> {
-    console.log('countries-game api is running on port 8000');
+app.listen(PORT, ()=> {
+    console.log('countries-game api is running on port ' + PORT);
   })
   
